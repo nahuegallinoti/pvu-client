@@ -4,11 +4,13 @@ export default function Root() {
       <div id="sidebar" className="flex flex-col mb-5">
         <div className="flex justify-center mb-5">
           <div className="flex-shrink-0">
-            <img
-              className="h-24"
-              src="https://plantvsundead.com/_nuxt/img/logo.efc0781.svg"
-              alt="Logo"
-            />
+            <a href={`/`} className="hover:no-underline">
+              <img
+                className="h-24"
+                src="https://plantvsundead.com/_nuxt/img/logo.efc0781.svg"
+                alt="Logo"
+              />
+            </a>
           </div>
         </div>
         <nav>

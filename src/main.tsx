@@ -4,14 +4,13 @@ import "./index.css";
 import { createBrowserRouter, RouterProvider } from "react-router-dom";
 import Root from "./routes/root";
 import Plants from "./components/Plants/plants";
-import App from "./App";
 import Decorations from "./components/Decorations/decorations";
 import Calculator from "./components/Calculator/calculator";
 
 const router = createBrowserRouter([
   {
     path: "/",
-    element: <App />,
+    element: <Calculator />,
   },
   {
     path: "/calculator",

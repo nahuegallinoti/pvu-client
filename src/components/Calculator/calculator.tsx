@@ -128,7 +128,7 @@ const Calculator = () => {
               </td>
               <td>
                 <button
-                  className="w-2/3 flex bg-red-600 hover:bg-red-700 text-white font-bold py-2 px-4 rounded"
+                  className="flex bg-red-600 hover:bg-red-700 text-white font-bold py-2 px-4 rounded"
                   onClick={() => handlePlantDelete(plant.data.plantId)}
                 >
                   Delete
