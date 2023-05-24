@@ -1,19 +1,13 @@
-# descarga la imagen de node para ejecutarlo desde docker
-FROM node:18
-
-# es como cd a esa carpeta (se puede cambiar el nombre app). los directorios pertenecen al container
-# WORKDIR /src/app
-
-# copia el package json de la maquina anfitriona (mia) a la carpeta de arriba (del container)
-# COPY package*.json ./
-
-COPY dist /app
-
-
-
-# puerto que expone la app al container (mismo puerto en el que corre el server)
-EXPOSE 5173
-
+# Etapa de compilación
+FROM node:latest as build-stage
 WORKDIR /app
-# ejecuta el comando
-CMD ["npx", "serve", "-s", "."]
+COPY package*.json ./
+RUN npm install
+COPY . .
+RUN npm run build
+
+# Etapa de producción
+FROM nginx:latest as production-stage
+COPY --from=build-stage /app/dist /usr/share/nginx/html
+EXPOSE 80
+CMD ["nginx", "-g", "daemon off;"]
