@@ -6,11 +6,10 @@ import DecorationTable from "./decorationTable";
 
 function Decorations() {
   const [decorations, setDecorations] = useState<Decoration[]>([]);
-  const [isDecorationTableExpanded, setIsDecorationTableExpanded] =
-    useState(true);
   const [selectedDecorationRarities, setSelectedDecorationRarities] = useState<
     string[]
   >(["legendary"]);
+  const [loading, setLoading] = useState(true);
 
   useEffect(() => {
     fetchDecorationData();
@@ -26,6 +25,8 @@ function Decorations() {
       setDecorations(response.data);
     } catch (error) {
       console.error("Error fetching decoration data:", error);
+    } finally {
+      setLoading(false);
     }
   }
 
@@ -46,57 +47,53 @@ function Decorations() {
     }
   }
 
-  const toggleDecorationTable = () => {
-    setIsDecorationTableExpanded(!isDecorationTableExpanded);
-  };
-
   return (
     <>
       <div className="flex flex-col">
-        <h1
-          className="text-3xl font-bold cursor-pointer flex justify-center"
-          onClick={toggleDecorationTable}
-        >
-          Decorations
-        </h1>
+        <h1 className="text-3xl font-bold flex justify-center">Decorations</h1>
 
-        {isDecorationTableExpanded && (
-          <>
-            <div className="flex items-center space-x-4 mb-4">
-              {rarityOptions.map((option) => (
-                <div key={option.value}>
-                  <label className="inline-flex items-center">
-                    <input
-                      type="checkbox"
-                      className="form-checkbox"
-                      value={option.value}
-                      checked={selectedDecorationRarities.includes(
-                        option.value
-                      )}
-                      onChange={(e) =>
-                        handleRarityDecorationChange(e.target.value)
-                      }
-                    />
-                    <span className="ml-2">{option.label}</span>
-                  </label>
-                </div>
-              ))}
-            </div>
-
-            <h1>
-              Total:{" "}
-              {
-                decorations.filter((x) =>
-                  selectedDecorationRarities.includes(x.decorationConfig.rarity)
-                ).length
-              }
-            </h1>
-
-            <DecorationTable
-              decorations={filterDecorationsByRarity(decorations)}
-            />
-          </>
-        )}
+        <>
+          {loading ? (
+            <p>Loading...</p>
+          ) : (
+            <>
+              {" "}
+              <div className="flex items-center space-x-4 mb-4">
+                {rarityOptions.map((option) => (
+                  <div key={option.value}>
+                    <label className="inline-flex items-center">
+                      <input
+                        type="checkbox"
+                        className="form-checkbox"
+                        value={option.value}
+                        checked={selectedDecorationRarities.includes(
+                          option.value
+                        )}
+                        onChange={(e) =>
+                          handleRarityDecorationChange(e.target.value)
+                        }
+                      />
+                      <span className="ml-2">{option.label}</span>
+                    </label>
+                  </div>
+                ))}
+              </div>
+              <h1>
+                Total:{" "}
+                {
+                  decorations.filter((x) =>
+                    selectedDecorationRarities.includes(
+                      x.decorationConfig.rarity
+                    )
+                  ).length
+                }
+              </h1>
+              <DecorationTable
+                decorations={filterDecorationsByRarity(decorations)}
+              />
+            </>
+          )}
+        </>
       </div>
     </>
   );

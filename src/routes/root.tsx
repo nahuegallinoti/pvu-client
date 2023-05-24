@@ -15,7 +15,7 @@ export default function Root() {
         </div>
         <nav>
           <ul className="flex flex-row justify-between m-5">
-            <li className="border rounded-md p-2 border-orange-400 hover:bg-orange-400">
+            <li className="border rounded-md p-2 border-yellow-400 hover:bg-yellow-400">
               <a href={`/calculator`} className="hover:no-underline">
                 Calculator
               </a>
@@ -25,9 +25,14 @@ export default function Root() {
                 Plants
               </a>
             </li>
-            <li className="border rounded-md p-2 border-orange-400 hover:bg-orange-400">
+            <li className="border rounded-md p-2 border-yellow-400 hover:bg-yellow-400">
               <a href={`/decorations`} className="hover:no-underline">
                 Decorations
+              </a>
+            </li>
+            <li className="border rounded-md p-2 border-violet-400 hover:bg-violet-400">
+              <a href={`/coordinates`} className="hover:no-underline">
+                Coordinates
               </a>
             </li>
           </ul>

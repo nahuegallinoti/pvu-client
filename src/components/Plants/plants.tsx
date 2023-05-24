@@ -7,12 +7,12 @@ import PlantTable from "./plantTable";
 function Plants() {
   const [plants, setPlants] = useState<Plant[]>([]);
   const [plantsByPrice, setPlantsByPrice] = useState<Plant[]>([]);
-  const [isPlantTableExpanded, setIsPlantTableExpanded] = useState(true);
   useState(true);
   const [selectedPlantRarities, setSelectedPlantRarities] = useState<string[]>([
     "legendary",
   ]);
   const [showPlantsByPrice, setShowPlantsByPrice] = useState(false);
+  const [loading, setLoading] = useState(true);
 
   useEffect(() => {
     fetchPlantData();
@@ -31,6 +31,8 @@ function Plants() {
       setPlants(response.data);
     } catch (error) {
       console.error("Error fetching plant data:", error);
+    } finally {
+      setLoading(false);
     }
   }
 
@@ -71,10 +73,6 @@ function Plants() {
     }
   }
 
-  const togglePlantTable = () => {
-    setIsPlantTableExpanded(!isPlantTableExpanded);
-  };
-
   const handleShowPlantsByPriceChange = () => {
     setShowPlantsByPrice(!showPlantsByPrice);
   };
@@ -94,48 +92,54 @@ function Plants() {
   return (
     <>
       <div className="flex flex-col">
-        <h1
-          className="text-3xl font-bold cursor-pointer flex justify-center"
-          onClick={togglePlantTable}
-        >
-          Plants
-        </h1>
+        <h1 className="text-3xl font-bold flex justify-center">Plants</h1>
 
-        {isPlantTableExpanded && (
-          <>
-            <div className="flex items-center space-x-4 mb-4">
-              {rarityOptions.map((option) => (
-                <label className="inline-flex items-center" key={option.value}>
-                  <input
-                    type="checkbox"
-                    className="form-checkbox"
-                    value={option.value}
-                    checked={selectedPlantRarities.includes(option.value)}
-                    onChange={(e) => handleRarityPlantChange(e.target.value)}
-                  />
-                  <span className="ml-2">{option.label}</span>
+        <>
+          {loading ? (
+            <p>Loading...</p>
+          ) : (
+            <>
+              {" "}
+              <div className="flex items-center space-x-4 mb-4">
+                {rarityOptions.map((option) => (
+                  <label
+                    className="inline-flex items-center"
+                    key={option.value}
+                  >
+                    <input
+                      type="checkbox"
+                      className="form-checkbox"
+                      value={option.value}
+                      checked={selectedPlantRarities.includes(option.value)}
+                      onChange={(e) => handleRarityPlantChange(e.target.value)}
+                    />
+                    <span className="ml-2">{option.label}</span>
+                  </label>
+                ))}
+              </div>
+              <div className="mt-4">
+                <input
+                  type="checkbox"
+                  id="showPlantsByPrice"
+                  checked={showPlantsByPrice}
+                  onChange={handleShowPlantsByPriceChange}
+                />
+                <label htmlFor="showPlantsByPrice" className="ml-1">
+                  Show plants by price
                 </label>
-              ))}
-            </div>
-            <div className="mt-4">
-              <input
-                type="checkbox"
-                id="showPlantsByPrice"
-                checked={showPlantsByPrice}
-                onChange={handleShowPlantsByPriceChange}
+              </div>
+              Total:{" "}
+              {showPlantsByPrice
+                ? applyFilterPlants(plantsByPrice).length
+                : applyFilterPlants(plants).length}
+              <PlantTable
+                plants={applyFilterPlants(
+                  showPlantsByPrice ? plantsByPrice : plants
+                )}
               />
-              <label htmlFor="showPlantsByPrice" className="ml-1">
-                Show plants by price
-              </label>
-            </div>
-            Total: {showPlantsByPrice ? plantsByPrice.length : plants.length}
-            <PlantTable
-              plants={applyFilterPlants(
-                showPlantsByPrice ? plantsByPrice : plants
-              )}
-            />
-          </>
-        )}
+            </>
+          )}
+        </>
       </div>
     </>
   );

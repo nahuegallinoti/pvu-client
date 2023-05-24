@@ -5,13 +5,34 @@ import { AddPlant } from "../../models/addPlant";
 const Calculator = () => {
   const [uniqueId, setUniqueId] = useState("");
   const [plants, setPlants] = useState<AddPlant[]>([]);
-  const [error, setError] = useState(false);
-  const [errorMessage, setErrorMessage] = useState("");
+  const [loading, setLoading] = useState<boolean>(false);
+  const [errorMessage, setErrorMessage] = useState<string | null>(null);
+  const [showErrorMessage, setShowErrorMessage] = useState<boolean>(false);
+  const [successMessage, setSuccessMessage] = useState<string | null>(null);
+  const [showSuccessMessage, setShowSuccessMessage] = useState<boolean>(false);
 
   useEffect(() => {
     const storedPlants = JSON.parse(localStorage.getItem("plants") || "[]");
     setPlants(storedPlants);
   }, []);
+
+  const showSuccessNotification = (message: string) => {
+    setSuccessMessage(message);
+    setShowSuccessMessage(true);
+    setTimeout(() => {
+      setShowSuccessMessage(false);
+      setSuccessMessage(null);
+    }, 3000);
+  };
+
+  const showErrorNotification = (message: string) => {
+    setErrorMessage(message);
+    setShowErrorMessage(true);
+    setTimeout(() => {
+      setShowErrorMessage(false);
+      setErrorMessage(null);
+    }, 3000);
+  };
 
   const handlePlantDelete = (id: number) => {
     const storedPlants = JSON.parse(localStorage.getItem("plants") || "[]");
@@ -29,15 +50,23 @@ const Calculator = () => {
   };
 
   const handleAddPlant = async () => {
-    if (plants.find((plant) => plant.data.uniqueId === parseInt(uniqueId))) {
-      setError(true);
-      setErrorMessage("Plant ID already exists");
+    setLoading(true);
+    setErrorMessage(null);
+    setShowErrorMessage(false);
+    setSuccessMessage(null);
+    setShowSuccessMessage(false);
+
+    if (uniqueId === "") {
+      setShowErrorMessage(true);
+      setErrorMessage("Please enter a Plant ID");
+      setLoading(false);
       return;
     }
 
-    if (uniqueId === "") {
-      setError(true);
-      setErrorMessage("Please enter a Plant ID");
+    if (plants.find((plant) => plant.data.uniqueId === parseInt(uniqueId))) {
+      setShowErrorMessage(true);
+      setErrorMessage("Plant ID already exists");
+      setLoading(false);
       return;
     }
 
@@ -48,21 +77,22 @@ const Calculator = () => {
 
       if (response.status === 200) {
         setUniqueId("");
-        setError(false);
-        setErrorMessage("");
+        setErrorMessage(null);
 
         const storedPlants = JSON.parse(localStorage.getItem("plants") || "[]");
         storedPlants.push(response.data);
         localStorage.setItem("plants", JSON.stringify(storedPlants));
 
         setPlants([...plants, response.data]);
+
+        showSuccessNotification("The plant was added successfully");
       } else {
-        setError(true);
-        setErrorMessage(response.data.message);
+        showErrorNotification(response.data.message);
       }
     } catch (error: any) {
-      setError(true);
-      setErrorMessage(error.response.data.message);
+      showErrorNotification(error.response.data.message);
+    } finally {
+      setLoading(false);
     }
   };
 
@@ -72,7 +102,6 @@ const Calculator = () => {
         <label className="text-center" htmlFor="uniqueId">
           Plant ID:
         </label>
-
         <input
           type="number"
           id="uniqueId"
@@ -80,17 +109,22 @@ const Calculator = () => {
           onChange={handleInputChange}
           className="w-1/3 mx-auto"
         />
-
         <button
           className="w-1/4 mx-auto flex justify-center items-center bg-green-600
           hover:bg-green-700 text-white font-bold py-2 px-4 rounded my-5"
           onClick={handleAddPlant}
+          disabled={loading}
         >
-          Add Plant
+          {loading ? "Loading..." : "Add Plant"}
         </button>
-        {error && (
+        {showErrorMessage && (
           <p className="text-center font-bold text-red-600 mt-2 mb-5">
             {errorMessage}
+          </p>
+        )}
+        {showSuccessMessage && (
+          <p className="text-center font-bold text-green-600 mt-2 mb-5">
+            {successMessage}
           </p>
         )}
       </div>

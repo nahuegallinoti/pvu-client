@@ -6,6 +6,7 @@ import Root from "./routes/root";
 import Plants from "./components/Plants/plants";
 import Decorations from "./components/Decorations/decorations";
 import Calculator from "./components/Calculator/calculator";
+import Coordinates from "./components/Coordinates/coordinates";
 
 const router = createBrowserRouter([
   {
@@ -23,6 +24,10 @@ const router = createBrowserRouter([
   {
     path: "/decorations",
     element: <Decorations />,
+  },
+  {
+    path: "/coordinates",
+    element: <Coordinates />,
   },
 ]);
 
